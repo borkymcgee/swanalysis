@@ -12,7 +12,8 @@ It can:
      + reproject the data to a different map projection (default is mercator)
 
 ## usage:
-   run swanalysis.py -h to see options and usage
+
+   Run swanalysis.py -u to download the cache file. Once it completes, run swanalysis.py -h to see options and usage
    
 ## How does it work?
    Here i detail each of the functions swanalysis can do and how they are accomplished.
