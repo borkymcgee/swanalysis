@@ -280,8 +280,6 @@ def updateCache(threads):
     
     cache_changed = False
 
-    startTime = datetime.datetime.now()
-    Vprint("Cache check/update started at {}".format(startTime))
     # Generate an array of dates to download
     new_data_dates = []
     for index, (static_array, date) in enumerate(zip(cache_array[start_index:end_index], datesArray(args.startDate, args.endDate))):
@@ -298,12 +296,16 @@ def updateCache(threads):
     Vprint("")
             
     if len(new_data_dates) > 0:
-        new_data = ThreadPool(threads).imap(getSwanArray, new_data_dates)
-        for (date, array) in new_data:
-            cache_array[(date - first_reading).days] = array
+        before = datetime.datetime.now()
+        for day, date_and_array in enumerate(ThreadPool(threads).imap(getSwanArray, new_data_dates)):
+            #add the new data to the appropriate date in the cache
+            cache_array[(date_and_array[0] - first_reading).days] = date_and_array[1]
+            percent_complete = (day/(len(new_data_dates))*100) + 0.01
+            estimated_completion = ((datetime.datetime.now() - before) / percent_complete) * (100 - percent_complete)
+            Vprint("{} remaining, {}% completed".format(str(estimated_completion)[0:7], str(percent_complete)[0:4]), nl=True)
         Vprint("")
-        Vprint("Took {} to check and download missing cache. updating average and valid days count".format(datetime.datetime.now() - startTime))
-
+        Vprint("Done, Downloading took {}".format(str(datetime.datetime.now() - before)[0:7]))
+        
         if not os.path.exists(args.input_file):
             Vprint("Writing data to new cache file")
             cacheHDUL.writeto(args.input_file)
@@ -489,8 +491,8 @@ def getSwanArray(swan_date):
     Vprint("getting data for date: {}".format(swan_date), 2)
     url = "http://swan.projet.latmos.ipsl.fr/data/L2//FSKMAPS/swan_bckgn_sm_{}_0001.fts".format(swan_date.strftime('%Y%m%d'))
     Vprint("url: {}".format(url), 2)
-    if swan_date.day == 1:
-        sys.stdout.write("\rdownloading data for {}".format(swan_date.strftime("%Y-%m")))
+    # if swan_date.day == 1:
+        # sys.stdout.write("\rdownloading data for {}".format(swan_date.strftime("%Y-%m")))
     swan_request = requests.get(url, stream = True)
     if swan_request.status_code != 200:
         # if args.verbose:
