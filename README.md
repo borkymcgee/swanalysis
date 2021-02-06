@@ -10,6 +10,24 @@ It can:
    - display an animation of the full sky image over time
      + Save that animation as a video file
      + reproject the data to a different map projection (default is mercator)
+     
+## Dependancies:
+   - cartopy
+   - astropy
+   - matplotlib
+   - scipy
+   - requests
+   - resource
+   - datetime
+   - numpy
+   - argparse
+   - tempfile
+   - multiprocessing
+## installation:
+
+Just install all of the dependancies! (I'm tryna figure out python packaging but no sucess yet XP):
+
+    pip3 install cartopy astropy matplotlib scipy requests resource datetime numpy argparse tempfile multiprocessing
 
 ## usage:
 
